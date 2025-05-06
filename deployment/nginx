@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        resources:
+          requests:
+            cpu: "250m"      # Requests 250 millicores of CPU
+            memory: "256Mi"  # Requests 256 MiB of RAM
+          limits:
+            cpu: "500m"      # Limits CPU usage to 500 millicores
+            memory: "512Mi"  # Limits RAM usage to 512 MiB
+        securityContext:
+          runAsUser: 1000       # Runs container as non-root user (UID 1000)
+          runAsGroup: 1000      # Runs with a non-root group (GID 1000)
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL             # Drops all Linux capabilities
+          seccompProfile:
+            type: RuntimeDefault
+        ports:
+        - containerPort: 80
